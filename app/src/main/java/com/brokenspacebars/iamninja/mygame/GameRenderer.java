@@ -23,6 +23,8 @@ public class GameRenderer implements GLSurfaceView.Renderer {
 
     private Starfield starfield;
 
+    float starfieldScroll = 0.0f;
+
     public GameRenderer(Context gameContext) {
         context = gameContext;
     }
@@ -32,6 +34,8 @@ public class GameRenderer implements GLSurfaceView.Renderer {
         GLES20.glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 
         starfield = new Starfield();
+
+        starfield.loadTexture(R.drawable.starfield, context);
     }
 
     @Override
@@ -49,13 +53,19 @@ public class GameRenderer implements GLSurfaceView.Renderer {
         GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT | GLES20.GL_DEPTH_BUFFER_BIT);
         Matrix.setLookAtM(mViewMatrix, 0, 0, 0, -3, 0f, 0f, 0f, 0f, 1.0f, 0.0f);
         Matrix.multiplyMM(mMVPMatrix, 0, mProjectionMatrix, 0, mViewMatrix, 0);
-        starfield.draw(mMVPMatrix, 0.0f);
+        starfield.draw(mMVPMatrix, starfieldScroll);
+
+        if (starfieldScroll == Float.MAX_VALUE) {
+            starfieldScroll = .0f;
+        }
+         starfieldScroll += .001;
     }
 
     public static int loadShader(int type, String shaderCode){
         int shader = GLES20.glCreateShader(type);
         GLES20.glShaderSource(shader, shaderCode);
         GLES20.glCompileShader(shader);
+
         return shader;
     }
 
